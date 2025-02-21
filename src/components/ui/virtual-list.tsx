@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { cn } from '@/lib/utils';
-import styles from './virtual-list.module.css';
 
 interface VirtualListProps<T> {
   items: T[];
@@ -25,34 +24,38 @@ export function VirtualList<T>({
   const parentRef = React.useRef<HTMLDivElement>(null);
 
   const rowVirtualizer = useVirtualizer({
-    size: items.length,
-    parentRef,
-    estimateSize: React.useCallback(() => itemHeight, [itemHeight]),
+    count: items.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => itemHeight,
     overscan,
   });
 
   return (
     <div
       ref={parentRef}
-      className={cn(styles.container, className)}
+      className={cn("overflow-auto", className)}
       style={{ height }}
     >
       <div
-        className={styles.virtualList}
         style={{
           height: `${rowVirtualizer.getTotalSize()}px`,
+          width: '100%',
+          position: 'relative',
         }}
       >
-        {rowVirtualizer.getVirtualItems().map((virtualRow) => (
+        {rowVirtualizer.getVirtualItems().map((virtualItem) => (
           <div
-            key={virtualRow.index}
-            className={styles.virtualRow}
+            key={virtualItem.key}
             style={{
-              height: `${virtualRow.size}px`,
-              transform: `translateY(${virtualRow.start}px)`,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: `${virtualItem.size}px`,
+              transform: `translateY(${virtualItem.start}px)`,
             }}
           >
-            {renderItem(items[virtualRow.index], virtualRow.index)}
+            {renderItem(items[virtualItem.index], virtualItem.index)}
           </div>
         ))}
       </div>

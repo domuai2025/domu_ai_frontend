@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useSupabase } from '@/components/supabase/provider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { MessageSquare, UserPlus, CheckCircle, Clock, Bell, Filter } from 'lucide-react';
+import { MessageSquare, UserPlus, CheckCircle, Clock, Bell, Filter, RefreshCw, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -102,8 +102,8 @@ export function RecentActivity() {
   const getActivityIcon = React.useCallback((type: ActivityType) => {
     const icons = {
       'new_lead': <UserPlus className="h-4 w-4" />,
-      'status_change': <CheckCircle className="h-4 w-4" />,
-      'note_added': <MessageSquare className="h-4 w-4" />,
+      'status_change': <RefreshCw className="h-4 w-4" />,
+      'note_added': <FileText className="h-4 w-4" />,
       'contact_made': <Clock className="h-4 w-4" />
     };
     return icons[type] || null;
@@ -195,7 +195,9 @@ export function RecentActivity() {
           {icon}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium">{activity.description}</p>
+          <p className="text-sm font-medium">
+            {activity.description || activity.message || `${activity.type} activity`}
+          </p>
           <p className="text-xs text-muted-foreground">
             {new Date(activity.createdAt).toLocaleString()}
           </p>

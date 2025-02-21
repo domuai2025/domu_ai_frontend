@@ -21,3 +21,18 @@ export interface Lead {
    */
   assignedTo?: string;
 }
+
+export type ActivityType = 'new_lead' | 'status_change' | 'note_added' | 'contact_made';
+
+export interface Activity {
+  id: string;
+  type: ActivityType;
+  userId: string;
+  userName: string;
+  workspaceId: string;
+  channelId?: string;
+  message?: string;
+  createdAt: string;
+  description: string;
+  leadId: string;
+}

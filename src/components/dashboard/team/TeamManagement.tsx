@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 interface TeamMember {
   id: string;
@@ -46,12 +47,18 @@ export function TeamManagement() {
 
     const channel = supabase
       .channel('team_updates')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'team_members' },
-        (payload) => {
-          setMembers(current => 
-            current.map(member => 
-              member.id === payload.new.id ? payload.new : member
+      .on(
+        'postgres_changes' as const,
+        {
+          event: '*',
+          schema: 'public',
+          table: 'team_members'
+        },
+        (payload: RealtimePostgresChangesPayload<TeamMember>) => {
+          if (!payload.new) return;
+          setMembers((current) =>
+            current.map((member) =>
+              member.id === (payload.new as TeamMember).id ? (payload.new as TeamMember) : member
             )
           );
         }
@@ -144,4 +151,4 @@ export function TeamManagement() {
       </div>
     </div>
   );
-} 
+}

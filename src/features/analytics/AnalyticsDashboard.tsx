@@ -1,27 +1,35 @@
+'use client';
+
 import { useState, useEffect } from 'react';
-import { Chart } from 'react-chartjs-2';
-import { ReportGenerator } from './components/ReportGenerator';
-import { MetricsDisplay } from './components/MetricsDisplay';
-import { HistoricalData } from './components/HistoricalData';
+import { Line, Bar } from 'react-chartjs-2';
+import { ReportGenerator, MetricsDisplay, HistoricalData } from './components';
+import { useCustomQuery } from '@/hooks/use-query';
+
+interface AnalyticsData {
+  chartData: any;
+  performanceData: any;
+  // Add other types as needed
+}
 
 export const AnalyticsDashboard = () => {
-  const [metrics, setMetrics] = useState<any>(null);
+  const { data: metrics, isLoading } = useCustomQuery<AnalyticsData>(
+    ['analytics'],
+    async () => {
+      // Implement your fetch logic
+      return {} as AnalyticsData;
+    }
+  );
 
-  useEffect(() => {
-    // Fetch initial metrics
-    fetchMetrics();
-  }, []);
-
-  const fetchMetrics = async () => {
-    // Implementation
-  };
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="space-y-6">
       <MetricsDisplay data={metrics} />
       <div className="grid grid-cols-2 gap-6">
-        <Chart type="line" data={metrics?.chartData} />
-        <Chart type="bar" data={metrics?.performanceData} />
+        <Line data={metrics?.chartData} />
+        <Bar data={metrics?.performanceData} />
       </div>
       <ReportGenerator />
       <HistoricalData />

@@ -14,6 +14,7 @@ import {
 } from 'recharts';
 import { Badge } from "@/components/ui/badge";
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { VirtualList } from '@/components/ui/virtual-list';
 
 interface AgentMetrics {
   timestamp: number;
@@ -34,7 +35,7 @@ export function RealTimeMonitor() {
   const [monitoringData, setMonitoringData] = useState<Record<string, MonitoringData>>({});
   const { supabase } = useSupabase();
   const parentRef = useRef<HTMLDivElement>(null);
-  
+
   const rowVirtualizer = useVirtualizer({
     count: Object.keys(monitoringData).length,
     getScrollElement: () => parentRef.current,
@@ -80,15 +81,15 @@ export function RealTimeMonitor() {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Real-Time Monitoring</h2>
-      <div 
-        ref={parentRef} 
-        className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-h-[800px] overflow-auto"
-      >
-        {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-          const agentId = Object.keys(monitoringData)[virtualRow.index];
+      <VirtualList
+        items={Object.keys(monitoringData)}
+        height={800}
+        itemHeight={300}
+        className="w-full"
+        renderItem={(agentId) => {
           const data = monitoringData[agentId];
           return (
-            <Card key={virtualRow.key} {...virtualRow.measureElement}>
+            <Card className="m-2">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Agent {agentId}</CardTitle>
                 <Badge variant={data.status === 'active' ? 'success' : 'warning'}>
@@ -133,8 +134,8 @@ export function RealTimeMonitor() {
               </CardContent>
             </Card>
           );
-        })}
-      </div>
+        }}
+      />
     </div>
   );
 }

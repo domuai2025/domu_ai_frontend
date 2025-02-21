@@ -1,21 +1,19 @@
-import { useQuery } from '@tanstack/react-query';
-import { toast } from '@/components/ui/toast';
+import { useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { useToast } from '@/components/ui/use-toast';
 
 export function useCustomQuery<T>(
   queryKey: string[],
   queryFn: () => Promise<T>,
-  options = {}
+  options: Omit<UseQueryOptions<T, Error, T>, 'queryKey' | 'queryFn'> = {}
 ) {
-  return useQuery({
+  const { toast } = useToast();
+
+  return useQuery<T, Error>({
+    ...options,
     queryKey,
     queryFn,
-    onError: (error: Error) => {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive'
-      });
-    },
-    ...options
+    retry: false,
+    gcTime: 0,
+    staleTime: 0,
   });
-} 
+}

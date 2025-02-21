@@ -1,12 +1,13 @@
-import { createSlackApp, App, SlackCommandMiddlewareArgs } from '@slack/bolt';
+import { App, LogLevel, SlackCommandMiddlewareArgs } from '@slack/bolt';
 
 export class SlackIntegration {
   private app: App;
 
-  constructor() {
-    this.app = createSlackApp({
-      token: process.env.SLACK_BOT_TOKEN,
-      signingSecret: process.env.SLACK_SIGNING_SECRET
+  constructor(token: string, signingSecret: string) {
+    this.app = new App({
+      token,
+      signingSecret,
+      logLevel: LogLevel.DEBUG
     });
 
     this.initializeCommands();
