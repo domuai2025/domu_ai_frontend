@@ -1,0 +1,15 @@
+.container {
+  overflow: auto;
+}
+
+.virtualList {
+  width: 100%;
+  position: relative;
+}
+
+.virtualRow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
